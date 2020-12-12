@@ -1,4 +1,4 @@
-# BtcStatus
+# BtcStatus 💱
 Basic cryptocurrency price status checker in GUI (Java & Swing). Currently in heavy develompment 😅.
 
 ## Installation
