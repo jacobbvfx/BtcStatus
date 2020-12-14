@@ -2,7 +2,7 @@
 Basic cryptocurrency price status checker in GUI (Java & Swing). Currently in heavy develompment 😅.
 
 ## Installation
-Download the latest version here (Coming soon) and double click .jar file.
+Download the latest version [here](https://github.com/shadoweG/BtcStatus/releases/) and double click .jar file.
 For the best experience download this [font](https://www.dafont.com/bebas.font) (install only .ttf file).
 
 ## Used Libraries & Api's
