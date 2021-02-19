@@ -8,9 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -40,6 +38,33 @@ public class BtcStatus implements ActionListener {
 
     Calendar dark = Calendar.getInstance();
 
+    public void FileManager() {
+        File file = new File("config.yml");
+        try (FileWriter myWriter = new FileWriter("config.yml")) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("[Test Log] File created: " + file.getName() + ".");
+                    try {
+                        myWriter.write("PLN\n");
+                        myWriter.close();
+                        System.out.println("[Test Log] Successfully wrote to the config.");
+                    } catch (IOException e) {
+                        System.out.println("[Test Log] Ooooops... An error occurred.");
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("[Test Log] File already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("[Test Log] Ooooops... An error occurred.");
+                e.printStackTrace();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     //Auto Dark/Light Mode W.I.P
     public void DateSetter() {
 
@@ -61,6 +86,7 @@ public class BtcStatus implements ActionListener {
 // Main Function
     BtcStatus() {
 
+        FileManager();
         //DateSetter();
 
         f.add(h, BorderLayout.BEFORE_FIRST_LINE);
