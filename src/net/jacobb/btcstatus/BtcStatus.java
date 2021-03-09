@@ -15,6 +15,7 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 import static java.awt.Color.*;
 
@@ -24,6 +25,8 @@ public class BtcStatus implements ActionListener {
 
     String BtcPrice = null;
     String Name = "BTCSTATUS";
+    String Crypto = null;
+    String Real = null;
 
     JFrame f = new JFrame();
     JPanel h = new JPanel();
@@ -38,33 +41,46 @@ public class BtcStatus implements ActionListener {
 
     Calendar dark = Calendar.getInstance();
 
+    Properties prop = new Properties();
+    //File Creation and Reading etc.
     public void FileManager() {
-        File file = new File("config.yml");
-        try (FileWriter myWriter = new FileWriter("config.yml")) {
+        File f = new File("config.properties");
+        if(f.exists() && !f.isDirectory()) {
+            System.out.println("[Test Log (File Creation)] File is already been created!");
+        }
+        else {
             try {
-                if (file.createNewFile()) {
-                    System.out.println("[Test Log] File created: " + file.getName() + ".");
-                    try {
-                        myWriter.write("PLN\n");
-                        myWriter.close();
-                        System.out.println("[Test Log] Successfully wrote to the config.");
-                    } catch (IOException e) {
-                        System.out.println("[Test Log] Ooooops... An error occurred.");
-                        e.printStackTrace();
-                    }
-                } else {
-                    System.out.println("[Test Log] File already exists.");
-                }
-            } catch (IOException e) {
-                System.out.println("[Test Log] Ooooops... An error occurred.");
-                e.printStackTrace();
-            }
+                prop.setProperty("crypto-currency", "BTC");
+                prop.setProperty("real-currency", "PLN");
 
-        } catch (IOException e) {
+                prop.store(new FileOutputStream("config.properties"), null);
+                System.out.println("[Test Log (File Creation)] File has been created!");
+
+            } catch (IOException ex) {
+                System.out.println("[Test Log (File Creation)] Ooooooooooops Error...");
+                ex.printStackTrace();
+            }
+        }
+        Properties properties = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("config.properties");
+        } catch (FileNotFoundException e) {
+            System.out.println("[Test Log (File Read)] Ooooooooooops Error there is no such file config.properties...");
             e.printStackTrace();
         }
+        try {
+            properties.load(input);
+        } catch (IOException e) {
+            System.out.println("[Test Log (File Read)] Ooooooooooops Error with input...");
+            e.printStackTrace();
+        }
+        Crypto = (String) properties.get("crypto-currency");
+        Real = (String) properties.get("real-currency");
 
+        System.out.println("[Test Log (File Read)]" + Crypto + " " + Real);
     }
+
     //Auto Dark/Light Mode W.I.P
     public void DateSetter() {
 
@@ -83,6 +99,7 @@ public class BtcStatus implements ActionListener {
         }
 
     }
+        
 // Main Function
     BtcStatus() {
 
@@ -125,7 +142,7 @@ public class BtcStatus implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String JsonUrl = "https://bitbay.net/API/Public/BTCPLN/ticker.json";
+        String JsonUrl = "https://bitbay.net/API/Public/"+ Crypto.toUpperCase() + Real.toUpperCase() +"/ticker.json";
 
         URL url = null;
         try {
@@ -154,8 +171,8 @@ public class BtcStatus implements ActionListener {
         }
         JsonObject rootobj = root.getAsJsonObject();
         BtcPrice = rootobj.get("average").getAsString();
-        System.out.println("[Test Log] " + BtcPrice + " ZL");
-        l.setText("<html>Rate BTC/PLN:<br/>" + BtcPrice + " ZL" + "</html>");
+        System.out.println("[Test Log] " + BtcPrice + " " + Real.toUpperCase());
+        l.setText("<html>Rate " + Crypto.toUpperCase() + "/" + Real.toUpperCase() + ":<br/>" + BtcPrice + " " + Real.toUpperCase() + "</html>");
     }
 
     public static void main(String[] args) {
