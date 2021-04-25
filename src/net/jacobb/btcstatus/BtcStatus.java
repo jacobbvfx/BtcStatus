@@ -27,13 +27,14 @@ public class BtcStatus implements ActionListener {
     String Name = "BTCSTATUS";
     String Crypto = null;
     String Real = null;
+    String Auto = null;
 
     JFrame f = new JFrame();
     JPanel h = new JPanel();
     JPanel r = new JPanel();
     JPanel d = new JPanel();
     JLabel t = new JLabel(Name);
-    JLabel l = new JLabel("Click to check the Rate", SwingConstants.CENTER);
+    JLabel l = new JLabel("Loading...", SwingConstants.CENTER);
     JButton b = new JButton("REFRESH");
 
     Date date = new Date();
@@ -52,6 +53,7 @@ public class BtcStatus implements ActionListener {
             try {
                 prop.setProperty("crypto-currency", "BTC");
                 prop.setProperty("real-currency", "PLN");
+                prop.setProperty("auto-refresh", "false");
 
                 prop.store(new FileOutputStream("config.properties"), null);
                 System.out.println("[Test Log (File Creation)] File has been created!");
@@ -77,8 +79,9 @@ public class BtcStatus implements ActionListener {
         }
         Crypto = (String) properties.get("crypto-currency");
         Real = (String) properties.get("real-currency");
+        Auto = (String) properties.get("auto-refresh");
 
-        System.out.println("[Test Log (File Read)]" + Crypto + " " + Real);
+        System.out.println("[Test Log (File Read)]" + Crypto + " " + Real + " " + Auto);
     }
 
     //Auto Dark/Light Mode W.I.P
@@ -124,7 +127,6 @@ public class BtcStatus implements ActionListener {
         r.add(l);
 
         d.setBackground(BLACK);
-        d.add(b);
 
         t.setFont(new Font("Bebas", Font.BOLD,32));
         t.setForeground(white);
@@ -138,10 +140,33 @@ public class BtcStatus implements ActionListener {
         b.setOpaque(true);
         b.addActionListener(this);
 
+        if (Auto.equalsIgnoreCase("false")) {
+            l.setText("Click to check the Rate");
+            d.add(b);
+        }
+        else if (Auto.equalsIgnoreCase("true")) {
+            while(true) {
+                try {
+                    priceChecker();
+                    Thread.sleep(15000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+            }
+        }
+        else {
+            l.setFont(new Font("Bebas", Font.BOLD, 28));
+            l.setText("<html>You entered an incorrect word in config in <br>auto-refresh <br>it must be true or false");
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
+        }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    public void priceChecker() {
         String JsonUrl = "https://bitbay.net/API/Public/"+ Crypto.toUpperCase() + Real.toUpperCase() +"/ticker.json";
 
         URL url = null;
@@ -173,6 +198,11 @@ public class BtcStatus implements ActionListener {
         BtcPrice = rootobj.get("average").getAsString();
         System.out.println("[Test Log] " + BtcPrice + " " + Real.toUpperCase());
         l.setText("<html>Rate " + Crypto.toUpperCase() + "/" + Real.toUpperCase() + ":<br/>" + BtcPrice + " " + Real.toUpperCase() + "</html>");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        priceChecker();
     }
 
     public static void main(String[] args) {
